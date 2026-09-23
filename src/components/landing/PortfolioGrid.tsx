@@ -12,7 +12,7 @@ import { PROJECTS } from "./projects";
  */
 export function PortfolioGrid() {
   return (
-    <section className="bg-alt-paper text-alt-ink px-[6vw] pb-3xl md:px-[8vw]">
+    <section id="work" className="bg-alt-paper text-alt-ink px-[6vw] pb-3xl md:px-[8vw]">
       {/* Full page width — no max-width cap — so the columns keep growing with
           the viewport. Padding matches the bio copy above it exactly. */}
       <div>

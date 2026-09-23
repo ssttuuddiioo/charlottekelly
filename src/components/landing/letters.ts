@@ -52,11 +52,13 @@ export const WORDS: Word[] = [
   },
 ];
 
-/** Width of a word's letter run, in em, first letter centre to last. */
-export const wordSpan = (n: number) => (n - 1) * ADVANCE;
-
-/** A letter's aligned x offset from its word's centre, in em (no jitter). */
-export const alignedX = (i: number, n: number) => i * ADVANCE - wordSpan(n) / 2;
+/**
+ * A letter's aligned position as a MULTIPLE of the advance, measured from its
+ * word's centre. Returned unitless on purpose: the advance itself is a CSS
+ * variable (--adv) that changes at the md breakpoint, so the layout multiplies
+ * this index by that variable rather than baking a length in here.
+ */
+export const alignedIndex = (i: number, n: number) => i - (n - 1) / 2;
 
 /** Every letter in reading order, flattened — the order GSAP sees in the DOM. */
 export const ALL_LETTERS: Letter[] = WORDS.flatMap((w) => w.letters);

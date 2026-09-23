@@ -1,10 +1,10 @@
 import Image from "next/image";
 
 const NAV = [
-  { label: "Home", href: "#" },
-  { label: "Work", href: "#" },
-  { label: "About", href: "#" },
-  { label: "Contact", href: "#" },
+  { label: "Home", href: "#top" },
+  { label: "Work", href: "#work" },
+  { label: "About", href: "#about" },
+  { label: "Contact", href: "#contact" },
 ];
 
 const SOCIAL = [{ label: "LinkedIn", href: "https://www.linkedin.com/" }];
@@ -22,8 +22,8 @@ const EMAIL = "hello@charlottekelly.com";
  */
 export function SiteFooter() {
   return (
-    <footer className="bg-alt-blue text-alt-paper font-display px-[6vw] pt-3xl pb-l md:px-[8vw]">
-      <div className="grid gap-x-l gap-y-2xl md:grid-cols-4">
+    <footer id="contact" className="bg-alt-blue text-alt-paper font-display px-[6vw] pt-3xl pb-l md:px-[8vw]">
+      <div className="grid gap-x-l gap-y-2xl md:grid-cols-2 lg:grid-cols-4">
         <div className="md:col-span-2">
           {/* Inline flow, not flex: the label has to sit tight against the end
               of the LAST line. As a flex sibling it gets pushed out to the
@@ -69,17 +69,17 @@ export function SiteFooter() {
 
           <a
             href={`mailto:${EMAIL}`}
-            className="min-h-tap mt-l inline-flex items-center gap-[0.5em] text-[0.95rem] font-medium underline underline-offset-[0.25em]"
+            className="min-h-tap mt-l flex max-w-full items-start gap-[0.5em] text-[0.95rem] font-medium underline underline-offset-[0.25em]"
           >
             <span aria-hidden="true" className="no-underline">
               ↳
             </span>
-            {EMAIL}
+            <span className="[overflow-wrap:anywhere] min-w-0">{EMAIL}</span>
           </a>
         </div>
       </div>
 
-      <div className="grid items-end gap-x-l gap-y-l pt-3xl md:grid-cols-4">
+      <div className="grid items-end gap-x-l gap-y-l pt-3xl md:grid-cols-2 lg:grid-cols-4">
         {/* Decorative, so no alt text and hidden from the accessibility tree. */}
         <div className="md:col-span-2">
           <Image
@@ -93,7 +93,7 @@ export function SiteFooter() {
           />
         </div>
 
-        <div className="md:col-start-4">
+        <div className="lg:col-start-4">
           <p className="text-fine font-bold tracking-[0.02em] uppercase">
             © {new Date().getFullYear()} Charlotte Kelly
           </p>

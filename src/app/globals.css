@@ -67,3 +67,33 @@
     }
   }
 }
+
+/* ------------------------------------------------------------------
+   Name lockup
+
+   One line at every width, including phones. The three values below have
+   to move together: the lockup is 12 x --adv wide plus the word gap, so
+   shrinking the advance on small screens is what lets the letters stay
+   readable instead of wrapping to two lines.
+
+   --letter is capped in vw as well as clamped. The clamp sets the size we
+   want; the min() guarantees the lockup still fits the viewport on a
+   narrow phone, where the clamp floor alone would overflow.
+   ------------------------------------------------------------------ */
+@layer components {
+  .scattered-name {
+    --adv: 1.26em;
+    --amp: 0.7;
+    --letter: min(clamp(1.125rem, 0.707rem + 1.714vw, 2.25rem), 4.85vw);
+    gap: 2.3em;
+  }
+
+  @media (min-width: 48rem) {
+    .scattered-name {
+      --adv: 1.56em;
+      --amp: 1;
+      --letter: min(clamp(1.125rem, 0.707rem + 1.714vw, 2.25rem), 3.75vw);
+      gap: 2.75em;
+    }
+  }
+}

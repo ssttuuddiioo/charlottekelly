@@ -4,7 +4,7 @@ import { useRef, type RefObject } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { ALL_LETTERS, WORDS, alignedX, wordSpan } from "./letters";
+import { ALL_LETTERS, WORDS, alignedIndex } from "./letters";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -28,10 +28,8 @@ const ALIGN_UNPINNED = "+=28%";
 
 export function ScatteredName({
   trigger,
-  replayKey = 0,
 }: {
   trigger: RefObject<HTMLElement | null>;
-  replayKey?: number;
 }) {
   const scope = useRef<HTMLDivElement>(null);
 
@@ -173,16 +171,17 @@ export function ScatteredName({
 
       return () => mm.revert();
     },
-    { scope, dependencies: [replayKey], revertOnUpdate: true },
+    { scope },
   );
 
   return (
     <div
       ref={scope}
-      // Sized in em, not vw: the whole lockup is 21.5em wide, so tying it to
-      // the type keeps the letter spacing constant at every viewport. Below md
-      // the two words stack, because one line does not fit a phone.
-      className="text-[length:var(--letter)] flex flex-col items-center justify-center gap-[1.6em] leading-none font-medium [--amp:0.7] md:flex-row md:items-center md:gap-[2.75em] md:[--amp:1]"
+      // One row at every width — the words never stack. The advance, the
+      // scatter amplitude and the letter size all come from .scattered-name in
+      // globals.css, because they have to change together to keep the lockup
+      // on one line on a phone.
+      className="scattered-name text-[length:var(--letter)] flex items-center justify-center leading-none font-medium"
       aria-hidden="true"
     >
       {/* Without JS nothing restores opacity, so put it back. The name is also
@@ -194,8 +193,8 @@ export function ScatteredName({
       {WORDS.map((word) => (
         <div
           key={word.word}
-          className="relative h-[4.4em] md:h-[6em]"
-          style={{ width: `${wordSpan(word.letters.length)}em` }}
+          className="relative h-[4.8em] md:h-[6em]"
+          style={{ width: `calc(var(--adv) * ${word.letters.length - 1})` }}
         >
           {word.letters.map((letter, i) => (
             <span
@@ -203,7 +202,7 @@ export function ScatteredName({
               data-letter
               className="absolute inline-block will-change-transform select-none"
               style={{
-                left: `calc(50% + ${alignedX(i, word.letters.length) + letter.jx}em)`,
+                left: `calc(50% + (var(--adv) * ${alignedIndex(i, word.letters.length)}) + ${letter.jx}em)`,
                 top: `calc(50% + (${letter.dy}em * var(--amp)))`,
                 transform: "translate(-50%, -50%)",
                 opacity: 0,
