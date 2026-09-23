@@ -149,5 +149,10 @@
   /* Portfolio grid, sampled from the mock. The mock's services grey (#8A8A8A)
      came in at 2.94:1 on the cream, so it is darkened to #6A6862 for 4.74:1. */
   --color-alt-ink: oklch(0% 0 0);              /* #000000 — 17.87:1 on cream */
+
+  /* The slide-out menu's ground. Warm ochre against the blue everything else
+     is set on, so the menu reads as a thing that has arrived over the page
+     rather than as more page. Black on it is 9.96:1. */
+  --color-alt-amber: oklch(77.2% 0.113 64.6);  /* #E7A564 —  9.96:1 with ink */
   --color-alt-muted: oklch(51.7% 0.010 91.6);  /* #6A6862 —  4.74:1 on cream */
 }

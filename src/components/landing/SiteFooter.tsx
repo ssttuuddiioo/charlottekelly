@@ -1,28 +1,24 @@
-import Image from "next/image";
-
-const NAV = [
-  { label: "Home", href: "#top" },
-  { label: "Work", href: "#work" },
-  { label: "About", href: "#about" },
-  { label: "Contact", href: "#contact" },
-];
-
-const SOCIAL = [{ label: "LinkedIn", href: "https://www.linkedin.com/" }];
-
-const EMAIL = "hello@charlottekelly.com";
+import { EMAIL, NAV, SOCIAL } from "@/lib/site";
 
 /**
  * Footer laid out on a four-column grid taken from the reference: the wordmark
  * spans the first two columns, navigation sits at 52% and contact at 76%, with
- * the print and the colophon anchoring the bottom edge.
+ * the colophon anchoring the bottom edge. The sun print that used to sit in
+ * this bottom row now runs alongside the bio instead — one deliberate use of
+ * it on the page rather than two.
  *
- * Everything is set at full opacity. The previous version dimmed the secondary
- * text and it fell below AA on this blue; here the hierarchy comes from size
- * and position instead, which costs nothing in contrast.
+ * Everything is set at full opacity. An earlier version dimmed the secondary
+ * text and it fell below AA; here the hierarchy comes from size and position
+ * instead, which costs nothing in contrast.
+ *
+ * Same ochre ground and black type as the slide-out menu, which carries the
+ * same four links and the same contact block — the two are one piece of
+ * furniture appearing in two places, so they should not be two colours. Black
+ * on this ochre is 9.96:1.
  */
 export function SiteFooter() {
   return (
-    <footer id="contact" className="bg-alt-blue text-alt-paper font-display px-[6vw] pt-3xl pb-l md:px-[8vw]">
+    <footer id="contact" className="bg-alt-amber text-alt-ink font-display px-[6vw] pt-3xl pb-l md:px-[8vw]">
       <div className="grid gap-x-l gap-y-2xl md:grid-cols-2 lg:grid-cols-4">
         <div className="md:col-span-2">
           {/* Inline flow, not flex: the label has to sit tight against the end
@@ -69,7 +65,10 @@ export function SiteFooter() {
 
           <a
             href={`mailto:${EMAIL}`}
-            className="min-h-tap mt-l flex max-w-full items-start gap-[0.5em] text-[0.95rem] font-medium underline underline-offset-[0.25em]"
+            // decoration-current because the base rule underlines links in the
+            // cyanotype accent blue, which on this ochre is a third colour
+            // doing nothing. The underline should just be the word's own.
+            className="min-h-tap mt-l flex max-w-full items-start gap-[0.5em] text-[0.95rem] font-medium underline decoration-current underline-offset-[0.25em]"
           >
             <span aria-hidden="true" className="no-underline">
               ↳
@@ -80,19 +79,6 @@ export function SiteFooter() {
       </div>
 
       <div className="grid items-end gap-x-l gap-y-l pt-3xl md:grid-cols-2 lg:grid-cols-4">
-        {/* Decorative, so no alt text and hidden from the accessibility tree. */}
-        <div className="md:col-span-2">
-          <Image
-            src="/tile.png"
-            alt=""
-            aria-hidden="true"
-            width={543}
-            height={714}
-            sizes="(min-width: 48rem) 300px, 46vw"
-            className="h-auto w-[46vw] max-w-[300px]"
-          />
-        </div>
-
         <div className="lg:col-start-4">
           <p className="text-fine font-bold tracking-[0.02em] uppercase">
             © {new Date().getFullYear()} Charlotte Kelly
