@@ -1,14 +1,10 @@
-import Image from "next/image";
-import { PROJECTS } from "./projects";
+import { ProjectCard } from "@/components/work/ProjectCard";
+import { PROJECTS } from "@/lib/projects";
 
 /**
- * Proportions measured off the mock: three equal columns, ~10px gutters, and a
- * 6/7 portrait crop on every card.
- *
- * The source images range from 0.675 to 1.922 in aspect, so the crop is what
- * makes the grid read as a grid. A fixed-aspect box plus `fill` is also what
- * keeps this CLS-free — intrinsic width/height would give every card a
- * different height and defeat the layout.
+ * Proportions measured off the mock: three equal columns and ~10px gutters.
+ * The card itself — crop, type, link — lives in ProjectCard, shared with the
+ * "more work" row on a project page.
  */
 export function PortfolioGrid() {
   return (
@@ -24,26 +20,13 @@ export function PortfolioGrid() {
         <ul className="grid grid-cols-1 gap-x-2xs gap-y-xl md:grid-cols-2 xl:grid-cols-3">
           {PROJECTS.map((project) => (
             <li key={project.slug}>
-              <article>
-                <div className="bg-alt-ink/5 relative aspect-[6/7] overflow-hidden">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    // Now that the grid is uncapped the columns are a fixed
-                    // share of the viewport, so sizes is expressed in vw:
-                    // 3-up inside 84vw is ~28vw, 2-up is ~42vw, 1-up is 88vw.
-                    sizes="(min-width: 80rem) 28vw, (min-width: 48rem) 42vw, 88vw"
-                    className="object-cover"
-                  />
-                </div>
-                <h3 className="pt-2xs text-[clamp(1.0625rem,0.98rem+0.38vw,1.25rem)] leading-[1.25]">
-                  {project.title}
-                </h3>
-                {/* 12px floor rather than the mock's ~10px — below that the
-                    services line stops being readable. */}
-                <p className="text-alt-muted pt-3xs text-fine">{project.services}</p>
-              </article>
+              {/* Now that the grid is uncapped the columns are a fixed share
+                  of the viewport, so sizes is expressed in vw: 3-up inside
+                  84vw is ~28vw, 2-up is ~42vw, 1-up is 88vw. */}
+              <ProjectCard
+                project={project}
+                sizes="(min-width: 80rem) 28vw, (min-width: 48rem) 42vw, 88vw"
+              />
             </li>
           ))}
         </ul>

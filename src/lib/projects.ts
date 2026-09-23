@@ -9,12 +9,26 @@
  * summary and every image carries its own required alt text. Until then, alt
  * falls back to the project title, which is a stand-in, not real alt text.
  */
+
+/**
+ * A run of body copy. A plain string is text; an object is an inline link.
+ *
+ * Deliberately not markdown: the copy needs exactly one inline element (a
+ * link), and an array of runs gives that without shipping a parser, while
+ * mapping cleanly onto Portable Text when Sanity lands in phase 4.
+ */
+export type BodyRun = string | { text: string; href: string };
+
 export type Project = {
   slug: string;
   title: string;
   services: string;
   credit?: string;
   image: string;
+  /** Case-study copy. Absent until Charlotte supplies it per project. */
+  body?: BodyRun[];
+  /** Case-study images, shown full width under the copy. */
+  gallery?: { src: string; alt: string }[];
 };
 
 export const PROJECTS: Project[] = [
@@ -24,6 +38,15 @@ export const PROJECTS: Project[] = [
     services: "Naming • messaging • brand guidelines",
     credit: "Zan Inc.",
     image: "/snackville.webp",
+    body: [
+      "Welcome to ",
+      // TODO: real URLs needed for both links below. Left as "#" rather than
+      // guessing domains for a real venue and a real studio.
+      { text: "Snackville at Pacific Park", href: "#" },
+      ", the reimagined food court at the iconic Santa Monica Pier. On the menu at Snackville’s brand-new culinary offerings: sweet treats, tasty bites, cold drinks, and more. Working with a creative team helmed by ",
+      { text: "Zan Inc.", href: "#" },
+      ", we named Snackville itself and five new food concepts. I also got to create fun messaging for menus and swag and put a polish on the brand guidelines.",
+    ],
   },
   {
     slug: "nutrire",
