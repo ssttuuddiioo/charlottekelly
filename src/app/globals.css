@@ -1,1 +1,69 @@
 @import "tailwindcss";
+@import "../styles/theme.css";
+
+@layer base {
+  html {
+    /* A sun print is a light object. There is no dark variant of this site,
+       and this keeps form controls and scrollbars from going dark anyway. */
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-serif);
+    font-size: var(--text-body);
+    line-height: 1.6;
+  }
+
+  /* Size and weight carry the hierarchy, not colour. Headings stay at ink. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 400;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* The underline does the work, so colour is never the only signal. */
+  a {
+    color: inherit;
+    text-decoration-color: var(--color-accent);
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: from-font;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-blue-200);
+    color: var(--color-ink-strong);
+  }
+
+  /* Baseline for the whole site. GSAP gets its own matchMedia handling
+     when it lands in a later phase; this covers plain CSS. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

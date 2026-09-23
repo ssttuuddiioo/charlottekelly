@@ -1,0 +1,153 @@
+/* ------------------------------------------------------------------
+   Charlotte Kelly — design tokens
+   Direction: cyanotype / sun print. Faded Prussian blue on warm paper.
+
+   Generated values, not hand-tuned guesses. The blue ramp is built in
+   OKLCH so the steps are perceptually even; hue drifts from cyan at the
+   pale end to violet at the deep end, which is how a real sun print
+   behaves and what stops this reading as a flat brand blue.
+
+   PLACEHOLDERS, pending Charlotte's sign-off: the blue hue, the paper
+   warmth, and both typefaces. Everything else keys off these tokens, so
+   changing them here changes the whole site.
+   ------------------------------------------------------------------ */
+
+@theme static {
+  /* -- Reset Tailwind's defaults -------------------------------------
+     Clearing these namespaces means the only colours, type sizes and
+     breakpoints available as utilities are the ones defined below.
+     No stray `text-blue-500` or `text-2xl` can creep in. */
+  --color-*: initial;
+  --text-*: initial;
+  --breakpoint-*: initial;
+
+  /* -- Escape hatches ------------------------------------------------ */
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-white: #fff;
+  --color-black: #000;
+
+  /* -- Paper --------------------------------------------------------- */
+  --color-paper: oklch(97.2% 0.011 88);   /* #F9F5EE base page */
+  --color-paper-2: oklch(94.6% 0.016 87); /* #F2EDE1 alternating bands, wells */
+
+  /* -- Cyanotype blue ramp ------------------------------------------- */
+  --color-blue-50: oklch(96.0% 0.018 232);  /* #E6F4FC */
+  --color-blue-100: oklch(92.5% 0.028 234);  /* #D5EAF6 */
+  --color-blue-200: oklch(86.0% 0.040 236);  /* #B9D6E8 */
+  --color-blue-300: oklch(77.5% 0.052 238);  /* #97BBD4 */
+  --color-blue-400: oklch(67.0% 0.064 241);  /* #729BB9 */
+  --color-blue-500: oklch(57.0% 0.072 244);  /* #517C9F */
+  --color-blue-600: oklch(47.5% 0.072 247);  /* #396083 */
+  --color-blue-700: oklch(38.5% 0.066 250);  /* #264666 */
+  --color-blue-800: oklch(30.5% 0.058 252);  /* #18304B */
+  --color-blue-900: oklch(23.5% 0.048 254);  /* #0D1F34 */
+
+  /* -- Semantic roles -------------------------------------------------
+     Use these in components, not the raw ramp. Contrast on paper is
+     noted; all text roles clear WCAG AA, body clears AAA. */
+  --color-ink: var(--color-blue-700);          /* body copy      8.99:1 AAA */
+  --color-ink-strong: var(--color-blue-800);   /* emphasis      12.36:1 AAA */
+  --color-ink-muted: var(--color-blue-600);    /* meta, labels   6.09:1 AA  */
+  --color-rule: var(--color-blue-200);         /* hairlines, non-text       */
+  --color-rule-strong: var(--color-blue-300);  /* hairlines, hover          */
+  --color-wash: var(--color-blue-50);          /* tinted blocks, image bg   */
+  --color-accent: var(--color-blue-500);       /* underlines, focus  4.08:1 */
+
+  /* -- Type ------------------------------------------------------------
+     Fluid 320→1280px. Geometric from body up (1.2 → 1.25 ratio);
+     the two steps below body are set by legibility floors instead, because
+     the ratio put them at 11px. Display caps at 44px — deliberately small,
+     per the brief. Leading tightens as size grows. */
+  --text-fine: clamp(0.75rem, 0.7292rem + 0.1042vw, 0.8125rem);
+  --text-fine--line-height: 1.4;
+  --text-fine--letter-spacing: 0.01em;
+
+  --text-small: clamp(0.875rem, 0.8438rem + 0.1563vw, 0.9688rem);
+  --text-small--line-height: 1.45;
+  --text-small--letter-spacing: 0.005em;
+
+  --text-body: clamp(1rem, 0.9583rem + 0.2083vw, 1.125rem);
+  --text-body--line-height: 1.6;
+
+  --text-lead: clamp(1.2rem, 1.1312rem + 0.3438vw, 1.4063rem);
+  --text-lead--line-height: 1.5;
+
+  --text-title: clamp(1.44rem, 1.334rem + 0.5302vw, 1.7581rem);
+  --text-title--line-height: 1.35;
+  --text-title--letter-spacing: -0.005em;
+
+  --text-heading: clamp(1.7281rem, 1.5717rem + 0.7823vw, 2.1975rem);
+  --text-heading--line-height: 1.25;
+  --text-heading--letter-spacing: -0.01em;
+
+  --text-display: clamp(2.0737rem, 1.8494rem + 1.1219vw, 2.7469rem);
+  --text-display--line-height: 1.15;
+  --text-display--letter-spacing: -0.02em;
+
+  /* -- Space -----------------------------------------------------------
+     Same fluid method, base 16→20px. Space breathes a little more than
+     type does: gutters open up on desktop while the words stay put.
+     Named steps for layout rhythm; Tailwind's numeric scale (p-2, gap-4)
+     still exists for small mechanical details. */
+  --spacing-3xs: clamp(0.25rem, 0.2292rem + 0.1042vw, 0.3125rem);
+  --spacing-2xs: clamp(0.5rem, 0.4583rem + 0.2083vw, 0.625rem);
+  --spacing-xs: clamp(0.75rem, 0.6875rem + 0.3125vw, 0.9375rem);
+  --spacing-s: clamp(1rem, 0.9167rem + 0.4167vw, 1.25rem);
+  --spacing-m: clamp(1.5rem, 1.375rem + 0.625vw, 1.875rem);
+  --spacing-l: clamp(2rem, 1.8333rem + 0.8333vw, 2.5rem);
+  --spacing-xl: clamp(3rem, 2.75rem + 1.25vw, 3.75rem);
+  --spacing-2xl: clamp(4rem, 3.6667rem + 1.6667vw, 5rem);
+  --spacing-3xl: clamp(6rem, 5.5rem + 2.5vw, 7.5rem);
+
+  /* 44px — minimum tap target. Use as min-h-tap / min-w-tap. */
+  --spacing-tap: 2.75rem;
+
+  /* -- Widths ----------------------------------------------------------- */
+  --container-measure: 68ch;  /* reading column: ~68 characters */
+  --container-page: 78rem;    /* 1248px outer maximum */
+
+  /* -- Breakpoints -------------------------------------------------------
+     Starting points, to be moved once real content decides where lines
+     want to break. No 2xl: the page maxes out at --container-page. */
+  --breakpoint-sm: 40rem;   /*  640px */
+  --breakpoint-md: 48rem;   /*  768px */
+  --breakpoint-lg: 64rem;   /* 1024px */
+  --breakpoint-xl: 80rem;   /* 1280px */
+
+  /* -- Fonts -------------------------------------------------------------
+     PLACEHOLDER pairing, wired so swapping is a one-file change
+     (src/lib/fonts.ts). Serif carries the copy because the copy is the
+     work; sans is for meta and navigation only. */
+  --font-serif: var(--font-newsreader), ui-serif, Georgia, Cambria, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+/* ------------------------------------------------------------------
+   ALTERNATE DIRECTION — under review at /lab/landing
+
+   Sampled straight off Charlotte's mock: electric blue ground, warm
+   off-white letters. Deliberately kept in its own block rather than
+   folded into the tokens above, so the cyanotype direction stays intact
+   until one of the two is chosen. If this wins, these get promoted and
+   the block above goes.
+   ------------------------------------------------------------------ */
+
+@theme static {
+  --color-alt-blue: oklch(45.9% 0.216 266.8);   /* #2342CD */
+  --color-alt-paper: oklch(94.5% 0.015 80.7);   /* #F2ECE2 — 6.54:1 on the blue, AA */
+  /* Note: --font-google-sans has to be declared at :root (it is, via the
+     root layout's html className) for this to resolve. A custom property that
+     references an undefined variable is invalid at computed-value time and
+     resolves once, where it is declared — descendants inherit the empty
+     result rather than re-resolving it. Scoping the font variable to a single
+     route silently blanks this token. */
+  --font-display: var(--font-google-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+@theme static {
+  /* Portfolio grid, sampled from the mock. The mock's services grey (#8A8A8A)
+     came in at 2.94:1 on the cream, so it is darkened to #6A6862 for 4.74:1. */
+  --color-alt-ink: oklch(0% 0 0);              /* #000000 — 17.87:1 on cream */
+  --color-alt-muted: oklch(51.7% 0.010 91.6);  /* #6A6862 —  4.74:1 on cream */
+}
