@@ -127,6 +127,15 @@ export function DevelopingTile({ className }: { className?: string }) {
           maskImage: WASH_MASK,
           WebkitMaskImage: WASH_MASK,
           "--wash": WASH_START,
+          // Isolate the print on its own raster layer for the duration.
+          // Re-running feTurbulence every frame dirties whatever tiles the
+          // filter sits on, and without this it shares them with the bio copy
+          // beside it, so the text is re-rastered 60 times a second too. Paired
+          // with contain: paint, which stops the invalidation spreading past
+          // the tile's own box. Both are dropped with the filter below — a
+          // layer left promoted for the life of the page is its own cost.
+          willChange: "filter",
+          contain: "paint",
         });
         if (img) gsap.set(img, { filter: TONE_START });
 
@@ -164,7 +173,7 @@ export function DevelopingTile({ className }: { className?: string }) {
             filter: "none",
             maskImage: "none",
             WebkitMaskImage: "none",
-            clearProps: "--wash",
+            clearProps: "--wash,willChange,contain",
           })
           .set(img, { clearProps: "filter" });
 

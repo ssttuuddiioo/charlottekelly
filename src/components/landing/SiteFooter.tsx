@@ -1,4 +1,5 @@
 import { EMAIL, NAV, SOCIAL } from "@/lib/site";
+import { MailingList } from "./MailingList";
 
 /**
  * Footer laid out on a four-column grid taken from the reference: the wordmark
@@ -75,6 +76,42 @@ export function SiteFooter() {
             </span>
             <span className="[overflow-wrap:anywhere] min-w-0">{EMAIL}</span>
           </a>
+        </div>
+      </div>
+
+      {/* Same four tracks as the block above, and the whole aside — heading,
+          line and field — sits in the last two of them, starting on the nav's
+          edge. Kept as one cell rather than split across the halves so the
+          left side of the footer belongs to the wordmark alone; read across,
+          the name is the whole of the left and everything addressed to you is
+          the whole of the right.
+
+          It sits between the lockup and the colophon because it is an aside,
+          not an ask: the work and the ways to reach her come first, and this
+          is the thing you may as well do on your way past. */}
+      <div className="gap-x-l gap-y-l pt-3xl grid md:grid-cols-2 lg:grid-cols-4">
+        <div className="md:col-span-2 lg:col-start-3">
+          <h2 className="text-[clamp(1.25rem,1rem+1.1vw,1.75rem)] leading-[1.15] font-bold tracking-[-0.01em] uppercase">
+            Not a newsletter
+          </h2>
+          {/* First person, where the bio a few sections up is third. The shift
+              is the point — this is the one place on the page she speaks for
+              herself, and the joke does not survive being reported.
+
+              No reason given for why it is not a newsletter. An excuse here
+              reads as unavailable, which is the opposite of what the rest of
+              the page is for; the heading has already done the disowning, so
+              the line just gets on with the offer. */}
+          <p className="mt-2xs max-w-[38ch] text-[0.95rem] font-medium">
+            Every once in a while, maybe, I’ll send a note about what I’m up
+            to. Maybe.
+          </p>
+
+          {/* The gap the two cells used to get from the grid, now that they
+              are one. */}
+          <div className="mt-l">
+            <MailingList />
+          </div>
         </div>
       </div>
 

@@ -24,10 +24,18 @@ export function ProjectFooter() {
           </li>
           <li>
             <a
-              href="https://www.linkedin.com/"
+              href="https://www.linkedin.com/in/kellycharlotte/"
               className="min-h-tap inline-flex items-center no-underline hover:underline"
             >
               Linkedin
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.instagram.com/charlottekellycopy/"
+              className="min-h-tap inline-flex items-center no-underline hover:underline"
+            >
+              Instagram
             </a>
           </li>
         </ul>

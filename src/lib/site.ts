@@ -16,7 +16,8 @@ export const NAV = [
 ] as const;
 
 export const SOCIAL = [
-  { label: "LinkedIn", href: "https://www.linkedin.com/" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/kellycharlotte/" },
+  { label: "Instagram", href: "https://www.instagram.com/charlottekellycopy/" },
 ] as const;
 
 export const EMAIL = "hello@charlottekelly.com";

@@ -12,7 +12,8 @@ const NAV = [
 ];
 const CONTACT = [
   { label: "Email", href: "mailto:hello@charlottekelly.com" },
-  { label: "Linkedin", href: "https://www.linkedin.com/" },
+  { label: "Linkedin", href: "https://www.linkedin.com/in/kellycharlotte/" },
+  { label: "Instagram", href: "https://www.instagram.com/charlottekellycopy/" },
 ];
 
 export function LandingShell({ children }: { children?: React.ReactNode }) {

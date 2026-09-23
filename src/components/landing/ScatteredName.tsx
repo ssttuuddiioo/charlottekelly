@@ -46,12 +46,25 @@ export function ScatteredName({
       // Derived rather than measured: a letter's rest offset from its word-box
       // centre is exactly dy x amp x 1em, so this stays correct through a
       // ScrollTrigger refresh without having to untransform anything first.
+      //
+      // Memoised because the wave ticker calls this every frame. getComputedStyle
+      // forces a style recalc, and doing one between quickSetter writes is a
+      // read-write-read thrash 60 times a second for a pair of numbers that only
+      // move on resize. ScrollTrigger refreshes on resize, so clearing the cache
+      // on refreshInit covers every case that can change them.
+      let cache: { u: number; amp: number } | null = null;
       const metrics = () => {
+        if (cache) return cache;
         const cs = getComputedStyle(outers[0]);
         const u = parseFloat(cs.fontSize);
         const amp = parseFloat(cs.getPropertyValue("--amp")) || 1;
-        return { u, amp };
+        cache = { u, amp };
+        return cache;
       };
+      const clearMetrics = () => {
+        cache = null;
+      };
+      ScrollTrigger.addEventListener("refreshInit", clearMetrics);
       const restY = (i: number) => {
         const { u, amp } = metrics();
         return ALL_LETTERS[i].dy * amp * u;
@@ -93,15 +106,29 @@ export function ScatteredName({
         const { u } = metrics();
 
         // ---- Phase A: settle -------------------------------------------------
-        // Letters drop in from a common line above and land on the scatter.
-        gsap.set(outers, { y: (i) => -restY(i) - 2.6 * u, opacity: 0 });
-        const settle = gsap.to(outers, {
-          y: 0,
-          opacity: 1,
-          duration: 1.5,
-          ease: "power3.out",
-          stagger: { each: 0.055 },
-        });
+        // The drop rides the INNER span, not the outer one.
+        //
+        // Phase C animates the outer span's x/y, and a scrub records its start
+        // values the first time it renders. While the settle owned that same
+        // property, scrolling early captured a mid-air y as the start — which
+        // is why the align used to be withheld until the settle had landed.
+        // Moving the drop one level in leaves the outer x/y sitting at 0, so
+        // the two compose instead of competing and you can scroll into the
+        // align while the letters are still falling.
+        gsap.set(inners, { y: (i) => -restY(i) - 2.6 * u });
+        gsap.set(outers, { opacity: 0 });
+        const settle = gsap
+          .timeline()
+          .to(
+            inners,
+            { y: 0, duration: 0.75, ease: "power3.out", stagger: { each: 0.0275 } },
+            0,
+          )
+          .to(
+            outers,
+            { opacity: 1, duration: 0.6, ease: "power2.out", stagger: { each: 0.0275 } },
+            0,
+          );
 
         // ---- Phase B: wave ---------------------------------------------------
         // Driven off the ticker rather than a staggered yoyo, because that
@@ -121,32 +148,42 @@ export function ScatteredName({
         gsap.ticker.add(tick);
         const waveIn = gsap.to(wave, {
           amp: 1,
-          duration: 1.2,
-          delay: 1.4,
+          duration: 1,
+          // Settle runs 0.75s + 0.0275 x 13 of stagger = ~1.11s, and both write
+          // inner y. Starting just past that avoids the wave snapping in at a
+          // part-way amplitude.
+          delay: 1.15,
           ease: "power2.out",
         });
 
         // ---- Phase C: align, on scroll --------------------------------------
-        // The trigger is created NOW, empty, and filled when the settle lands.
+        // Trigger and tweens are both built up front now.
         //
-        // Those two things have to happen at different times. The pin adds a
+        // The trigger has to exist immediately regardless: the pin adds a
         // pin-spacer worth 60% of the viewport to the document, so creating it
-        // 1.5s into the page means the document is short for those 1.5s and
-        // then suddenly is not — and a scroll position restored against the
-        // short version lands in the wrong place, which is what made the page
-        // jump on load. The tweens, meanwhile, cannot be added early: a scrub
-        // records its start values the first time it renders, and while the
-        // settle is still falling that value is a mid-air y, not the scatter.
+        // late means the document is short and then suddenly is not, and a
+        // restored scroll position measured against the short version lands in
+        // the wrong place. The tweens used to be withheld because the settle
+        // owned the outer span's y; now that the drop lives on the inner span
+        // there is nothing to wait for, and the align responds the moment you
+        // scroll.
+        // Resolved from the DOM, not from the ref.
         //
-        // Splitting the two is safe because the trigger's end is a fixed
-        // distance, so the pin does not change length when the timeline it is
-        // scrubbing gets longer.
+        // React attaches host refs child-first, so this component's layout
+        // effect runs BEFORE the parent <section ref={hero}> has its ref set:
+        // `trigger.current` is still null here. That went unnoticed while the
+        // trigger was built 1.5s later inside buildAlign, but creating it up
+        // front means the old `?? root` fallback silently pinned the name box
+        // instead of the hero — so the page scrolled away underneath the align
+        // instead of holding still, and the start fired ~300px down the page.
+        const hero = trigger.current ?? root.closest("section") ?? root;
+
         const alignTl = gsap.timeline({
           scrollTrigger: {
-            trigger: trigger.current ?? root,
+            trigger: hero,
             start: "top top",
             end: wide ? ALIGN_PINNED : ALIGN_UNPINNED,
-            pin: wide ? (trigger.current ?? root) : false,
+            pin: wide ? hero : false,
             anticipatePin: wide ? 1 : 0,
             scrub: 0.5,
             invalidateOnRefresh: true,
@@ -188,7 +225,7 @@ export function ScatteredName({
           // the measurements it would recompute have not moved, and refreshing
           // mid-page is itself a scroll correction worth not making.
         };
-        settle.eventCallback("onComplete", buildAlign);
+        buildAlign();
 
         return () => {
           gsap.ticker.remove(tick);
@@ -200,7 +237,10 @@ export function ScatteredName({
         },
       );
 
-      return () => mm.revert();
+      return () => {
+        ScrollTrigger.removeEventListener("refreshInit", clearMetrics);
+        mm.revert();
+      };
     },
     { scope },
   );
