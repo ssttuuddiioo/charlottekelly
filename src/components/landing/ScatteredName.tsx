@@ -40,6 +40,7 @@ export function ScatteredName({
 
       const outers = gsap.utils.toArray<HTMLElement>("[data-letter]", root);
       const inners = gsap.utils.toArray<HTMLElement>("[data-wave]", root);
+      const tagline = root.querySelector<HTMLElement>("[data-tagline]");
       if (!outers.length) return;
 
       // Derived rather than measured: a letter's rest offset from its word-box
@@ -71,6 +72,8 @@ export function ScatteredName({
       // this one.
       mm.add("(prefers-reduced-motion: reduce)", () => {
         gsap.set(outers, { opacity: 1 });
+        // No scroll-linked reveal to run, so the tagline is simply present.
+        if (tagline) gsap.set(tagline, { opacity: 1, y: 0 });
       });
 
       // matchMedia runs the callback when ANY listed condition matches, so
@@ -124,22 +127,34 @@ export function ScatteredName({
         });
 
         // ---- Phase C: align, on scroll --------------------------------------
-        // Built once settle has landed, so the scrub captures y = 0 (the
-        // scattered rest position) as its start rather than a mid-fall value.
-        let alignTl: gsap.core.Timeline | null = null;
+        // The trigger is created NOW, empty, and filled when the settle lands.
+        //
+        // Those two things have to happen at different times. The pin adds a
+        // pin-spacer worth 60% of the viewport to the document, so creating it
+        // 1.5s into the page means the document is short for those 1.5s and
+        // then suddenly is not — and a scroll position restored against the
+        // short version lands in the wrong place, which is what made the page
+        // jump on load. The tweens, meanwhile, cannot be added early: a scrub
+        // records its start values the first time it renders, and while the
+        // settle is still falling that value is a mid-air y, not the scatter.
+        //
+        // Splitting the two is safe because the trigger's end is a fixed
+        // distance, so the pin does not change length when the timeline it is
+        // scrubbing gets longer.
+        const alignTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: trigger.current ?? root,
+            start: "top top",
+            end: wide ? ALIGN_PINNED : ALIGN_UNPINNED,
+            pin: wide ? (trigger.current ?? root) : false,
+            anticipatePin: wide ? 1 : 0,
+            scrub: 0.5,
+            invalidateOnRefresh: true,
+          },
+        });
+
         const buildAlign = () => {
-          alignTl = gsap
-            .timeline({
-              scrollTrigger: {
-                trigger: trigger.current ?? root,
-                start: "top top",
-                end: wide ? ALIGN_PINNED : ALIGN_UNPINNED,
-                pin: wide ? (trigger.current ?? root) : false,
-                anticipatePin: wide ? 1 : 0,
-                scrub: 0.5,
-                invalidateOnRefresh: true,
-              },
-            })
+          alignTl
             .to(
               outers,
               {
@@ -155,7 +170,23 @@ export function ScatteredName({
             // genuinely motionless.
             .to(wave, { amp: 0, duration: 0.55, ease: "none" }, 0)
             .set(inners, { y: 0 });
-          ScrollTrigger.refresh();
+
+          // The tagline rides the same scrub rather than its own trigger, so
+          // it can never drift out of step with the align. It runs over the
+          // first 0.6 of a ~1.26s timeline: moving the moment you scroll, and
+          // fully there by the time the name has resolved.
+          if (tagline) {
+            alignTl.fromTo(
+              tagline,
+              { opacity: 0, y: () => metrics().u * 0.5 },
+              { opacity: 1, y: 0, duration: 0.6, ease: "power1.out" },
+              0,
+            );
+          }
+          // No refresh here any more. It used to be needed because the pin had
+          // just changed the page's height; the pin now predates the settle, so
+          // the measurements it would recompute have not moved, and refreshing
+          // mid-page is itself a scroll correction worth not making.
         };
         settle.eventCallback("onComplete", buildAlign);
 
@@ -163,8 +194,8 @@ export function ScatteredName({
           gsap.ticker.remove(tick);
           settle.kill();
           waveIn.kill();
-          alignTl?.scrollTrigger?.kill();
-          alignTl?.kill();
+          alignTl.scrollTrigger?.kill();
+          alignTl.kill();
         };
         },
       );
@@ -175,48 +206,80 @@ export function ScatteredName({
   );
 
   return (
-    <div
-      ref={scope}
-      // One row at every width — the words never stack. The advance, the
-      // scatter amplitude and the letter size all come from .scattered-name in
-      // globals.css, because they have to change together to keep the lockup
-      // on one line on a phone.
-      className="scattered-name text-[length:var(--letter)] flex items-center justify-center leading-none font-medium"
-      aria-hidden="true"
-    >
+    // .scattered-name sits on this wrapper rather than on the row of words so
+    // that --letter is in scope for the tagline too: the tagline's offset is
+    // expressed as a multiple of the letter size, which is what keeps it the
+    // same distance under the name at every width.
+    <div ref={scope} className="scattered-name flex flex-col items-center">
       {/* Without JS nothing restores opacity, so put it back. The name is also
           in the sr-only h1 either way. */}
       <noscript>
-        <style dangerouslySetInnerHTML={{ __html: "[data-letter]{opacity:1!important}" }} />
+        <style
+          dangerouslySetInnerHTML={{
+            __html: "[data-letter],[data-tagline]{opacity:1!important}",
+          }}
+        />
       </noscript>
 
-      {WORDS.map((word) => (
-        <div
-          key={word.word}
-          className="relative h-[4.8em] md:h-[6em]"
-          style={{ width: `calc(var(--adv) * ${word.letters.length - 1})` }}
-        >
-          {word.letters.map((letter, i) => (
-            <span
-              key={`${word.word}-${i}`}
-              data-letter
-              className="absolute inline-block will-change-transform select-none"
-              style={{
-                left: `calc(50% + (var(--adv) * ${alignedIndex(i, word.letters.length)}) + ${letter.jx}em)`,
-                top: `calc(50% + (${letter.dy}em * var(--amp)))`,
-                transform: "translate(-50%, -50%)",
-                opacity: 0,
-              }}
-            >
-              {/* Inner span carries the wave so it composes with the outer
-                  span's align transform instead of overwriting it. */}
-              <span data-wave className="inline-block will-change-transform">
-                {letter.ch}
+      <div
+        // One row at every width — the words never stack. The advance, the
+        // scatter amplitude and the letter size all come from .scattered-name
+        // in globals.css, because they have to change together to keep the
+        // lockup on one line on a phone.
+        className="text-[length:var(--letter)] flex items-center justify-center gap-[var(--word-gap)] leading-none font-medium"
+        aria-hidden="true"
+      >
+        {WORDS.map((word) => (
+          <div
+            key={word.word}
+            className="relative h-[4.8em] md:h-[6em]"
+            style={{ width: `calc(var(--adv) * ${word.letters.length - 1})` }}
+          >
+            {word.letters.map((letter, i) => (
+              <span
+                key={`${word.word}-${i}`}
+                data-letter
+                className="absolute inline-block will-change-transform select-none"
+                style={{
+                  left: `calc(50% + (var(--adv) * ${alignedIndex(i, word.letters.length)}) + ${letter.jx}em)`,
+                  top: `calc(50% + (${letter.dy}em * var(--amp)))`,
+                  transform: "translate(-50%, -50%)",
+                  opacity: 0,
+                }}
+              >
+                {/* Inner span carries the wave so it composes with the outer
+                    span's align transform instead of overwriting it. */}
+                <span data-wave className="inline-block will-change-transform">
+                  {letter.ch}
+                </span>
               </span>
-            </span>
-          ))}
-        </div>
-      ))}
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Real content, so it is NOT inside the aria-hidden lockup above and
+          not duplicated in the sr-only h1.
+
+          Offset in multiples of --letter rather than its own em, so it holds
+          the same distance under the name at every width. 2.6x --letter on
+          desktop clears the lowest scattered letter (dy 1.99em at amp 1) by a
+          margin, which matters because the fade starts while the letters are
+          still on their way up. */}
+      <p
+        data-tagline
+        className="text-fine mt-[calc(var(--letter)*-0.4)] text-center leading-[1.6] font-normal tracking-[0.12em] uppercase md:tracking-[0.16em]"
+        // Hidden in CSS for the same reason the letters are: the align
+        // timeline is only built after the settle completes (~1.5s), and
+        // anything visible until then flashes.
+        style={{ opacity: 0 }}
+      >
+        {/* Each phrase is unbreakable, so on a phone the line wraps between
+            phrases instead of mid-phrase. */}
+        <span className="whitespace-nowrap">Copywriting,</span>{" "}
+        <span className="whitespace-nowrap">Brand Strategy,</span>{" "}
+        <span className="whitespace-nowrap">Verbal Identity</span>
+      </p>
     </div>
   );
 }

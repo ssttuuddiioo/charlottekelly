@@ -2,18 +2,40 @@
 @import "../styles/theme.css";
 
 @layer base {
+  :root {
+    /* Height of the fixed bar. Read from JS as well as CSS — scrollToHash
+       subtracts it so a section does not land underneath it — so it is set in
+       px rather than rem, which keeps that read a plain parseFloat. */
+    --header-h: 56px;
+  }
+
+  @media (min-width: 48rem) {
+    :root {
+      --header-h: 64px;
+    }
+  }
+
   html {
     /* A sun print is a light object. There is no dark variant of this site,
        and this keeps form controls and scrollbars from going dark anyway. */
     color-scheme: light;
     -webkit-text-size-adjust: 100%;
+
+    /* Reserve the scrollbar's column permanently. Opening the menu hides
+       overflow to hold the page still behind it, and without a reserved gutter
+       that would widen the viewport by ~15px and shift the whole page. */
+    scrollbar-gutter: stable;
+
+    /* The closed menu panel is parked off the right edge. Clipping the x axis
+       keeps it from adding a horizontal scrollbar; the y axis is untouched. */
+    overflow-x: clip;
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    html {
-      scroll-behavior: smooth;
-    }
-  }
+  /* NO `scroll-behavior: smooth` here, deliberately.
+     It applies to every scroll the document makes, including the instant
+     corrections ScrollTrigger performs when it creates or refreshes a pin —
+     which turned those corrections into a visible drift on load. In-page links
+     get their smoothness from scrollToHash instead, so only a click has it. */
 
   body {
     background-color: var(--color-paper);
@@ -85,7 +107,7 @@
     --adv: 1.26em;
     --amp: 0.7;
     --letter: min(clamp(1.125rem, 0.707rem + 1.714vw, 2.25rem), 4.85vw);
-    gap: 2.3em;
+    --word-gap: 2.3em;
   }
 
   @media (min-width: 48rem) {
@@ -93,7 +115,78 @@
       --adv: 1.56em;
       --amp: 1;
       --letter: min(clamp(1.125rem, 0.707rem + 1.714vw, 2.25rem), 3.75vw);
-      gap: 2.75em;
+      --word-gap: 2.75em;
+    }
+  }
+
+  /* ----------------------------------------------------------------
+     Header mark — the name lockup at ~10px
+
+     Same construction as .scattered-name above and the same source data
+     (letters.ts), with two values scaled down. --amp drops to 0.6 — enough
+     of the scatter to read as the scatter, while keeping the lockup inside a
+     56px bar, which the hero's full amplitude (45px tall) could not do.
+     --letter drops to mark size, putting the whole lockup at ~200px wide.
+
+     The wave is CSS here rather than GSAP: nothing about it is
+     scroll-linked, and this keeps the animation bundle off project pages.
+     The reduced-motion block above flattens it to a single frame, which
+     leaves the letters scattered and still — the right end state, so there
+     is nothing further to do for it here.
+     ---------------------------------------------------------------- */
+  .site-mark {
+    --adv: 1.56em;
+    --amp: 0.6;
+    --letter: 0.5625rem;
+    --word-gap: 2.2em;
+
+    display: inline-flex;
+    align-items: center;
+    gap: var(--word-gap);
+    font-size: var(--letter);
+    font-weight: 500;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 48rem) {
+    .site-mark {
+      --letter: 0.625rem;
+    }
+  }
+
+  /* Each word is a positioning context as wide as its letters' advances.
+     The height covers the scatter: dy runs -2.22em to 1.99em, so at --amp
+     0.6 the letters span about 2.5em, plus a letter's own height. */
+  .site-mark__word {
+    position: relative;
+    display: block;
+    height: 3.8em;
+    flex: none;
+  }
+
+  /* Outer span holds the letter's place, inner span carries the wave, so
+     the two transforms compose instead of overwriting each other. */
+  .site-mark__slot {
+    position: absolute;
+    display: inline-block;
+    transform: translate(-50%, -50%);
+    user-select: none;
+  }
+
+  .site-mark__float {
+    display: inline-block;
+    /* One period is 2*pi / 1.1 rad/s — the hero's wave speed. */
+    animation: site-mark-float 5.71s ease-in-out infinite;
+  }
+
+  @keyframes site-mark-float {
+    0%,
+    100% {
+      transform: translateY(-0.28em);
+    }
+    50% {
+      transform: translateY(0.28em);
     }
   }
 }
