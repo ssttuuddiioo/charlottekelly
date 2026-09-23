@@ -9,7 +9,7 @@ const CONTACT = [
   { label: "Linkedin", href: "https://www.linkedin.com/" },
 ];
 
-export function LandingLab({ children }: { children?: React.ReactNode }) {
+export function LandingShell({ children }: { children?: React.ReactNode }) {
   const hero = useRef<HTMLElement>(null);
   const [replayKey, setReplayKey] = useState(0);
 

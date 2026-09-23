@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
-import { LandingLab } from "./LandingLab";
-import { PortfolioGrid } from "./PortfolioGrid";
-import { SiteFooter } from "./SiteFooter";
+import { Landing } from "@/components/landing";
 
+/**
+ * Review URL. Renders exactly what `/` renders — same component, no copy —
+ * so sharing this link always shows the live landing. Kept noindex so the two
+ * routes never compete as duplicate content.
+ */
 export const metadata: Metadata = {
   title: "Landing — Charlotte Kelly",
   description: "Landing page direction for review.",
@@ -10,10 +13,5 @@ export const metadata: Metadata = {
 };
 
 export default function LandingLabPage() {
-  return (
-    <LandingLab>
-      <PortfolioGrid />
-      <SiteFooter />
-    </LandingLab>
-  );
+  return <Landing />;
 }
