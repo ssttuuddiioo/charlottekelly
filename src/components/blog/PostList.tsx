@@ -13,7 +13,7 @@ import { formatDate, type Post } from "@/lib/posts";
  */
 const ROW = "grid md:grid-cols-[5fr_11fr] md:gap-x-s";
 
-function Row({ post }: { post: Post }) {
+function Row({ post, base }: { post: Post; base: string }) {
   return (
     <li className="border-alt-ink/15 border-b">
       {/* One link across the whole row, as on a project card: a much larger
@@ -21,7 +21,7 @@ function Row({ post }: { post: Post }) {
           reads first in the accessible name, which is also the order it is
           read in on screen. */}
       <Link
-        href={`/blog/${post.slug}`}
+        href={`${base}/blog/${post.slug}`}
         className={`group items-start gap-y-2xs py-m no-underline ${ROW}`}
       >
         <p className="text-small flex items-center gap-[0.6em] pt-[0.35em]">
@@ -53,7 +53,15 @@ function Row({ post }: { post: Post }) {
  * between the third row and the fourth, rather than moving to the bottom. That
  * reads as a hinge, which is what it is.
  */
-export function PostList({ posts, limit }: { posts: Post[]; limit?: number }) {
+export function PostList({
+  posts,
+  limit,
+  base,
+}: {
+  posts: Post[];
+  limit?: number;
+  base: string;
+}) {
   const shown = limit ? posts.slice(0, limit) : posts;
   const rest = limit ? posts.slice(limit) : [];
 
@@ -64,7 +72,7 @@ export function PostList({ posts, limit }: { posts: Post[]; limit?: number }) {
           whether or not the fold follows. */}
       <ul className="border-alt-ink/15 border-t">
         {shown.map((post) => (
-          <Row key={post.slug} post={post} />
+          <Row key={post.slug} post={post} base={base} />
         ))}
       </ul>
 
@@ -84,7 +92,7 @@ export function PostList({ posts, limit }: { posts: Post[]; limit?: number }) {
 
           <ul className="border-alt-ink/15 border-t">
             {rest.map((post) => (
-              <Row key={post.slug} post={post} />
+              <Row key={post.slug} post={post} base={base} />
             ))}
           </ul>
         </details>

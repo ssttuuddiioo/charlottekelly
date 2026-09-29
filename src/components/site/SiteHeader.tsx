@@ -19,7 +19,7 @@ import { FloatingMark } from "./FloatingMark";
  * which also means the bar never has to work out what it is sitting on: the
  * ground is always this blue.
  */
-export function SiteHeader() {
+export function SiteHeader({ base }: { base: string }) {
   const header = useRef<HTMLElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
@@ -98,7 +98,7 @@ export function SiteHeader() {
 
       <div className="bg-alt-blue relative z-10 flex h-[var(--header-h)] items-center justify-between px-[6vw] md:px-[2.5vw]">
         <Link
-          href="/"
+          href={base}
           aria-label="Charlotte Kelly — home"
           className="min-h-tap inline-flex items-center no-underline"
         >
@@ -151,7 +151,7 @@ export function SiteHeader() {
           }}
           className="bg-alt-amber text-alt-ink pb-l absolute top-0 right-0 flex h-dvh w-full max-w-[34rem] translate-x-full flex-col justify-between overflow-y-auto overscroll-contain px-[6vw] pt-[var(--header-h)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] data-[open=true]:translate-x-0 md:px-[3.5rem]"
         >
-          <MenuBody />
+          <MenuBody base={base} />
         </div>
       </div>
     </header>
@@ -183,7 +183,7 @@ function Hamburger() {
  * third of the page wide. Same source lists as the footer, so the two cannot
  * drift apart.
  */
-function MenuBody() {
+function MenuBody({ base }: { base: string }) {
   return (
     <>
       <nav aria-label="Menu">
@@ -191,7 +191,7 @@ function MenuBody() {
           {NAV.map((item) => (
             <li key={item.label}>
               <Link
-                href={item.href}
+                href={`${base}${item.hash}`}
                 className="min-h-tap inline-flex items-center text-[clamp(1.75rem,1.2rem+2.4vw,2.75rem)] leading-[1.15] font-bold tracking-[-0.01em] uppercase no-underline"
               >
                 {item.label}

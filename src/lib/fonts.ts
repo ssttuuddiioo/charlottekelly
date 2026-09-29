@@ -1,4 +1,4 @@
-import { Google_Sans, Inter, Newsreader } from "next/font/google";
+import { Archivo, Google_Sans, IBM_Plex_Mono, Inter, Newsreader } from "next/font/google";
 
 /**
  * PLACEHOLDER pairing while the real typefaces are chosen.
@@ -37,4 +37,26 @@ export const googleSans = Google_Sans({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-google-sans",
+});
+
+/**
+ * v2's pair, after the Jueves de [Archivo] poster its case study is mapped to:
+ * Archivo for everything set big, IBM Plex Mono for the small caps labels.
+ *
+ * Applied on v2's own wrapper rather than <html>, so v2 pages load them and
+ * the rest of the site does not. That is also why theme.css reads them through
+ * `@theme inline` — see the note there.
+ */
+export const archivo = Archivo({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-archivo",
+});
+
+/** Not variable, so the one weight in use has to be named. */
+export const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-plex-mono",
+  weight: "400",
 });

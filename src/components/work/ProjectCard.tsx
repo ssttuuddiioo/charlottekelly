@@ -12,12 +12,21 @@ import type { Project } from "@/lib/projects";
  * what keeps this CLS-free — intrinsic width/height would give every card a
  * different height and defeat the layout.
  */
-export function ProjectCard({ project, sizes }: { project: Project; sizes: string }) {
+export function ProjectCard({
+  project,
+  sizes,
+  base,
+}: {
+  project: Project;
+  sizes: string;
+  /** The version this card is rendered in, so the link stays inside it. */
+  base: string;
+}) {
   return (
     <article>
       {/* The whole card is one link rather than a link on the title: it gives
           a much larger target and means only one stop in the tab order. */}
-      <Link href={`/work/${project.slug}`} className="group block no-underline">
+      <Link href={`${base}/work/${project.slug}`} className="group block no-underline">
         <div className="bg-alt-ink/5 relative aspect-[6/7] overflow-hidden">
           <Image
             src={project.image}

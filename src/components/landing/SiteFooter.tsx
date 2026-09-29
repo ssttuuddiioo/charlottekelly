@@ -17,7 +17,7 @@ import { MailingList } from "./MailingList";
  * furniture appearing in two places, so they should not be two colours. Black
  * on this ochre is 9.96:1.
  */
-export function SiteFooter() {
+export function SiteFooter({ base }: { base: string }) {
   return (
     <footer id="contact" className="bg-alt-amber text-alt-ink font-display px-[6vw] pt-3xl pb-l md:px-[8vw]">
       <div className="grid gap-x-l gap-y-2xl md:grid-cols-2 lg:grid-cols-4">
@@ -40,7 +40,7 @@ export function SiteFooter() {
             {NAV.map((item) => (
               <li key={item.label}>
                 <a
-                  href={item.href}
+                  href={`${base}${item.hash}`}
                   className="min-h-tap inline-flex items-center text-[clamp(1.25rem,1rem+1.1vw,1.75rem)] leading-[1.15] font-bold tracking-[-0.01em] uppercase no-underline"
                 >
                   {item.label}

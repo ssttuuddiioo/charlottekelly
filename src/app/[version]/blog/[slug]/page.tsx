@@ -14,7 +14,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: PageProps<"/blog/[slug]">): Promise<Metadata> {
+}: PageProps<"/[version]/blog/[slug]">): Promise<Metadata> {
   const post = bySlug((await params).slug);
   if (!post) return {};
 
@@ -36,10 +36,14 @@ const BODY =
 const LINK =
   "text-alt-blue min-h-tap inline-flex items-center gap-[0.4em] underline decoration-current underline-offset-[0.4em]";
 
-export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
-  const { slug } = await params;
+export default async function PostPage({ params }: PageProps<"/[version]/blog/[slug]">) {
+  const { version, slug } = await params;
   const post = bySlug(slug);
   if (!post) notFound();
+
+  // Posts are the same page in every version; only where its links lead
+  // changes, so reading one never drops you into another version.
+  const base = `/${version}`;
 
   // Nothing to open in a new tab until there is a real URL, so the attributes
   // that would do it are withheld rather than pointed at "#".
@@ -47,7 +51,7 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
 
   return (
     <div className="bg-alt-paper text-alt-ink font-display min-h-dvh pt-[var(--header-h)]">
-      <SiteHeader />
+      <SiteHeader base={base} />
 
       {/* One centred column at the reading measure, not the full-bleed width
           the work pages use. A post is read straight down; the portfolio is
@@ -95,7 +99,7 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
             </span>
           </a>
 
-          <Link href="/" className={LINK}>
+          <Link href={base} className={LINK}>
             Home
           </Link>
         </div>

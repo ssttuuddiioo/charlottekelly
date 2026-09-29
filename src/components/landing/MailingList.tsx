@@ -5,6 +5,21 @@ import { subscribe, type SubscribeState } from "@/lib/subscribe";
 
 const INITIAL: SubscribeState = { status: "idle", message: "" };
 
+/** Type per setting: the landing footer's, and v2's sidebar. See below. */
+const VARIANTS = {
+  footer: {
+    input:
+      "placeholder:text-alt-ink/70 text-[clamp(1.125rem,0.95rem+0.7vw,1.5rem)] font-medium",
+    button: "text-[0.95rem] font-bold tracking-[0.02em] uppercase",
+    status: "font-medium",
+  },
+  sidebar: {
+    input: "placeholder:text-current/80 text-[1rem]",
+    button: "text-[0.9375rem]",
+    status: "",
+  },
+};
+
 /**
  * The sign-up field: one rule, the address on it, the button at its right end.
  * Taken from the reference, minus the terms checkbox — there is no terms page
@@ -18,8 +33,15 @@ const INITIAL: SubscribeState = { status: "idle", message: "" };
  * Black on the footer's ochre at full opacity, like everything else in here.
  * The placeholder is the one exception at 70%, which is 5.83:1 — still AA, and
  * it is not the label. The real label is beside it, visually hidden.
+ *
+ * The `sidebar` variant is v2's, on the blue: body-size type, everything at
+ * regular weight like the rest of that column, the button in sentence case,
+ * and the placeholder at 80% of the paper, since 70% there
+ * comes in under AA (3.99:1, against 4.75:1 at 80%). Colour otherwise comes
+ * from the text around it in both.
  */
-export function MailingList() {
+export function MailingList({ variant = "footer" }: { variant?: keyof typeof VARIANTS }) {
+  const styles = VARIANTS[variant];
   const [state, action, pending] = useActionState(subscribe, INITIAL);
   const field = useRef<HTMLInputElement>(null);
   const id = useId();
@@ -57,7 +79,7 @@ export function MailingList() {
           placeholder="Your email"
           aria-describedby={state.message ? `${id}-status` : undefined}
           aria-invalid={state.status === "error" || undefined}
-          className="placeholder:text-alt-ink/70 w-full min-w-0 flex-1 bg-transparent text-[clamp(1.125rem,0.95rem+0.7vw,1.5rem)] leading-[1.2] font-medium outline-none"
+          className={`w-full min-w-0 flex-1 bg-transparent leading-[1.2] outline-none ${styles.input}`}
         />
         <button
           type="submit"
@@ -69,7 +91,7 @@ export function MailingList() {
           //
           // outline-current because the base focus ring is the cyanotype accent
           // blue, which on this ochre is a third colour doing nothing.
-          className="min-h-tap inline-flex shrink-0 items-end text-[0.95rem] leading-[1.2] font-bold tracking-[0.02em] uppercase focus-visible:outline-current disabled:opacity-60"
+          className={`min-h-tap inline-flex shrink-0 items-end leading-[1.2] focus-visible:outline-current disabled:opacity-60 ${styles.button}`}
         >
           {pending ? "Sending" : "Add me"}
         </button>
@@ -80,7 +102,7 @@ export function MailingList() {
       <p
         id={`${id}-status`}
         aria-live="polite"
-        className="mt-2xs min-h-[1.4em] text-[0.95rem] font-medium"
+        className={`mt-2xs min-h-[1.4em] text-[0.95rem] ${styles.status}`}
       >
         {state.message}
       </p>

@@ -13,7 +13,7 @@ import { POSTS } from "@/lib/posts";
  * wrapper, so its edges land on the grid's edges by construction rather than
  * by two files agreeing on a number.
  */
-export function RecentPosts() {
+export function RecentPosts({ base }: { base: string }) {
   return (
     <section aria-labelledby="recently" className="pt-3xl pb-3xl">
       {/* Same size as the h1 on /blog — twice the title token — so the
@@ -25,7 +25,7 @@ export function RecentPosts() {
         Recently...
       </h2>
 
-      <PostList posts={POSTS} limit={3} />
+      <PostList posts={POSTS} limit={3} base={base} />
     </section>
   );
 }

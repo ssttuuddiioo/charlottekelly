@@ -33,19 +33,19 @@ const SIZES = "(min-width: 80rem) 28vw, (min-width: 48rem) 42vw, 88vw";
 const found = PROJECTS.findIndex((project) => project.slug === "little-spoon");
 const BREAK = found === -1 ? PROJECTS.length : found + 1;
 
-function Run({ projects }: { projects: Project[] }) {
+function Run({ projects, base }: { projects: Project[]; base: string }) {
   return (
     <ul className={COLUMNS}>
       {projects.map((project) => (
         <li key={project.slug}>
-          <ProjectCard project={project} sizes={SIZES} />
+          <ProjectCard project={project} sizes={SIZES} base={base} />
         </li>
       ))}
     </ul>
   );
 }
 
-export function PortfolioGrid({ interlude }: { interlude?: ReactNode }) {
+export function PortfolioGrid({ base, interlude }: { base: string; interlude?: ReactNode }) {
   return (
     /* Full page width — no max-width cap — so the columns keep growing with
        the viewport. Padding matches the bio copy above it exactly, and the
@@ -55,7 +55,7 @@ export function PortfolioGrid({ interlude }: { interlude?: ReactNode }) {
         <h2 id="work-heading" className="sr-only">
           Selected work
         </h2>
-        <Run projects={PROJECTS.slice(0, BREAK)} />
+        <Run projects={PROJECTS.slice(0, BREAK)} base={base} />
       </section>
 
       {interlude}
@@ -65,7 +65,7 @@ export function PortfolioGrid({ interlude }: { interlude?: ReactNode }) {
           "Selected work" would say there were two. */}
       {BREAK < PROJECTS.length ? (
         <section aria-labelledby="work-heading">
-          <Run projects={PROJECTS.slice(BREAK)} />
+          <Run projects={PROJECTS.slice(BREAK)} base={base} />
         </section>
       ) : null}
     </div>

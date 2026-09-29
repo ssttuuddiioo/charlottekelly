@@ -27,11 +27,10 @@ export type Post = {
   /** ISO `YYYY-MM-DD`. Sorting and formatting both rely on that. */
   date: string;
   /**
-   * The client's own site, behind the "View project" link on the entry page.
-   *
-   * None are known yet, so none are set. Same rule the project copy follows in
-   * src/lib/projects.ts: a domain guessed from a client's name is a link to
-   * somewhere nobody checked, and this one would go out under their name.
+   * The link behind "View project" on the entry page — whatever her about
+   * page on charlottekellycopy.com links the entry to, which is sometimes
+   * the client and sometimes the studio's write-up. Four entries have no link
+   * there, so none here: a guessed domain would go out under a client's name.
    */
   clientUrl?: string;
 };
@@ -48,6 +47,7 @@ export const POSTS: Post[] = [
       "Verbal identity and copy as part of a full brand refresh for Gusto, the small business payroll and HR platform",
     credit: "Smith & Diction",
     date: "2026-08-04",
+    clientUrl: "https://gusto.com/company-news/gusto-brand-refresh-2026",
   },
   {
     slug: "target-holiday-26",
@@ -61,6 +61,7 @@ export const POSTS: Post[] = [
       "Strategic foundations, voice guidelines, and messaging to refresh cult favorite skincare brand Allies of Skin",
     credit: "Established",
     date: "2026-02-10",
+    clientUrl: "https://establishednyc.com/allies-of-skin",
   },
   {
     slug: "target-summer-25",
@@ -73,6 +74,7 @@ export const POSTS: Post[] = [
     title: "Messaging for Gamma, a content creation platform",
     credit: "Smith & Diction",
     date: "2024-11-12",
+    clientUrl: "https://gamma.app/",
   },
   {
     slug: "fortell",
@@ -80,6 +82,7 @@ export const POSTS: Post[] = [
       "Verbal identity and messaging for Fortell, a company making AI-powered hearing aids",
     credit: "Smith & Diction",
     date: "2024-09-03",
+    clientUrl: "https://www.fortell.com/",
   },
   {
     slug: "commence",
@@ -87,6 +90,7 @@ export const POSTS: Post[] = [
       "Creative concepts, brand story, and messaging for Commence, a haircare line founded by Brooke Shields",
     credit: "Established",
     date: "2024-06-18",
+    clientUrl: "https://establishednyc.com/commence",
   },
   {
     slug: "smash-kitchen",
@@ -94,6 +98,7 @@ export const POSTS: Post[] = [
       "Packaging and site copy for Smash Kitchen, a line of pantry staples from actor Glen Powell",
     credit: "Brains",
     date: "2024-04-09",
+    clientUrl: "https://smashkitchen.com/",
   },
   {
     slug: "fashion-retailer",
@@ -114,6 +119,7 @@ export const POSTS: Post[] = [
       "Verbal identity and menu copy for L’Arrêt, James Beard award-winning chef Mashama Bailey’s first Paris restaurant",
     credit: "Zan Inc.",
     date: "2023-07-25",
+    clientUrl: "https://www.zangoodman.com/projects/larret",
   },
 ];
 

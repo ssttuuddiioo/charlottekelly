@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { HashScroll } from "@/components/site/HashScroll";
+import { BIO } from "@/lib/site";
 import { DevelopingTile } from "./DevelopingTile";
 import { ScatteredName } from "./ScatteredName";
 
@@ -96,18 +97,11 @@ export function LandingShell({ children }: { children?: React.ReactNode }) {
               around 50 characters at 1440 and 56 at 1920 — wider than the 44ch
               the copy had before. */}
           <div className="text-[clamp(1.5rem,1.3143rem+0.7619vw,2rem)] leading-[1.3] font-normal md:col-start-2 xl:col-span-2">
-            <p>
-              Charlotte Kelly is an independent senior copywriter. She has been
-              partnering with agencies, studios, and friends on brand strategy,
-              verbal identity, and all kinds of writing since 2015. Before then,
-              she worked for literary agents and publishing houses. Her projects
-              have ranged from groundbreaking startups to established global
-              brands across beauty, wellness, tech, fashion, and more.
-            </p>
-            <p className="mt-[0.9em]">
-              After many years in NYC, she’s currently based in San Diego, CA,
-              working with teams everywhere.
-            </p>
+            {BIO.map((paragraph, i) => (
+              <p key={i} className={i ? "mt-[0.9em]" : undefined}>
+                {paragraph}
+              </p>
+            ))}
           </div>
         </div>
       </section>
