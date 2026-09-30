@@ -3,7 +3,11 @@ import { LINK, V3Page } from "@/components/work/V3Page";
 import { V4Hero } from "@/components/work/V4Page";
 import { V5Tile } from "@/components/work/V5Tile";
 import { V5Takeover } from "@/components/work/V5Takeover";
-import { BIO } from "@/lib/site";
+import { PROJECT_POSTS } from "@/lib/posts";
+
+/** The column's bio: the first two sentences of BIO, and no more. */
+const BIO_COLUMN =
+  "Charlotte Kelly is an independent senior copywriter. She has been partnering with agencies, studios, and friends on brand strategy, verbal identity, and all kinds of writing since 2015.";
 
 /**
  * v5: v4, with three differences.
@@ -14,9 +18,9 @@ import { BIO } from "@/lib/site";
  * An open project leads with its first paragraph, above the big image
  * rather than under it.
  *
- * The blue column holds only the name, her bio and Learn more. Learn more
+ * The blue column holds only the name, the start of her bio and Learn more. Learn more
  * spreads the blue over the whole window and sets the rest of her about on
- * it — v2's landing, less the bio the column already has: posts and lists —
+ * it — v2's landing: the full bio on the cream, then posts and lists —
  * until Close sends it back into the column (V5Takeover). In the middle of
  * the blue, her print, the orange tile: it is there from the
  * first screen, before the name and the bio, and a click on it scrolls down
@@ -32,17 +36,12 @@ export function V5Page({ base, open }: { base: string; open?: string }) {
       lead
       about={
         <>
-          {/* The paragraphs as one block, so the entrance motion brings the
-              bio in as one piece. */}
-          <div className="pt-2xl">
-            {BIO.map((paragraph, i) => (
-              <p key={i} className={i ? "mt-[0.9em]" : undefined}>
-                {paragraph}
-              </p>
-            ))}
+          {/* From lg, pinned to the foot of the column, Learn more under it. */}
+          <div className="pt-2xl lg:mt-auto">
+            <p>{BIO_COLUMN}</p>
           </div>
           <V5Takeover label="Learn more" className="pt-xs" triggerClassName={LINK}>
-            <V2Landing base={base} bio={false} />
+            <V2Landing base={base} colored posts={PROJECT_POSTS} />
           </V5Takeover>
           {/* From lg, centred on the whole column both ways: the column is
               sticky, so it is what inset-0 measures against, at the window's

@@ -1,7 +1,6 @@
+import { ProjectFooter } from "@/components/work/ProjectFooter";
 import { LandingShell } from "./LandingShell";
 import { PortfolioGrid } from "./PortfolioGrid";
-import { RecentPosts } from "./RecentPosts";
-import { SiteFooter } from "./SiteFooter";
 
 /**
  * The whole landing page, composed once and rendered by every version's root
@@ -13,15 +12,13 @@ import { SiteFooter } from "./SiteFooter";
  * the RSC payload instead of being pulled into the client bundle with the
  * animation code.
  *
- * The writing goes through the grid rather than after it — the grid breaks for
- * it after the third row — so it is passed in the same way, and this file stays
- * the one place the landing's running order is written down.
+ * Her recent writing is not on it: v1's menu brings that up (SiteHeader).
  */
 export function Landing({ base }: { base: string }) {
   return (
-    <LandingShell>
-      <PortfolioGrid base={base} interlude={<RecentPosts base={base} />} />
-      <SiteFooter base={base} />
+    <LandingShell base={base}>
+      <PortfolioGrid base={base} />
+      <ProjectFooter />
     </LandingShell>
   );
 }

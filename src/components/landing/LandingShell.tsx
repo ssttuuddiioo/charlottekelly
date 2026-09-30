@@ -3,21 +3,10 @@
 import { useRef } from "react";
 import { HashScroll } from "@/components/site/HashScroll";
 import { BIO } from "@/lib/site";
-import { DevelopingTile } from "./DevelopingTile";
+import { LandingHeader } from "./LandingHeader";
 import { ScatteredName } from "./ScatteredName";
 
-const NAV = [
-  { label: "About", href: "#about" },
-  { label: "Contact", href: "#contact" },
-  { label: "Work", href: "#work" },
-];
-const CONTACT = [
-  { label: "Email", href: "mailto:hello@charlottekelly.com" },
-  { label: "Linkedin", href: "https://www.linkedin.com/in/kellycharlotte/" },
-  { label: "Instagram", href: "https://www.instagram.com/charlottekellycopy/" },
-];
-
-export function LandingShell({ children }: { children?: React.ReactNode }) {
+export function LandingShell({ base, children }: { base: string; children?: React.ReactNode }) {
   const hero = useRef<HTMLElement>(null);
 
   return (
@@ -27,7 +16,9 @@ export function LandingShell({ children }: { children?: React.ReactNode }) {
           animates ScrollTrigger's own corrections. */}
       <HashScroll />
 
-      <section id="top" ref={hero} className="flex min-h-dvh flex-col">
+      {/* relative so the name's offsets are measured from here
+          (LandingHeader), pinned or not. */}
+      <section id="top" ref={hero} className="relative flex min-h-dvh flex-col">
         {/* The name is rendered twice: scattered and aria-hidden for the eye,
             flat and visually hidden for screen readers and crawlers. */}
         <h1 className="sr-only">Charlotte Kelly</h1>
@@ -35,74 +26,31 @@ export function LandingShell({ children }: { children?: React.ReactNode }) {
         <main className="flex flex-1 items-center justify-center px-[6vw] py-2xl">
           <ScatteredName trigger={hero} />
         </main>
-
-        <footer className="px-[6vw] pb-l md:px-[8vw]">
-          <nav
-            aria-label="Site"
-            className="flex flex-wrap items-center justify-between gap-x-l gap-y-2xs text-[0.95rem]"
-          >
-            <ul className="flex items-center gap-m">
-              {NAV.map((item) => (
-                <li key={item.label}>
-                  <a
-                    href={item.href}
-                    className="min-h-tap inline-flex items-center no-underline opacity-90 transition-opacity hover:opacity-100"
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <ul className="flex items-center gap-m">
-              {CONTACT.map((item) => (
-                <li key={item.label}>
-                  <a
-                    href={item.href}
-                    className="min-h-tap inline-flex items-center no-underline opacity-90 transition-opacity hover:opacity-100"
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </footer>
       </section>
+
+      {/* The menu button, fixed top right, and the motion of the name as
+          the hero leaves. After the hero rather than before it, fixed as
+          it is, because
+          React sets refs and runs layout effects in tree order: here the
+          hero ref is set, and ScatteredName's pin made, by the time this
+          measures against them. */}
+      <LandingHeader base={base} hero={hero} />
 
       {/* Sized to its copy, not to the viewport. It used to be min-h-dvh to
           give the scroll-driven align somewhere to run; the grid below supplies
           that now, and holding a full viewport just left dead space. */}
       <section id="about" className="bg-alt-paper text-alt-blue px-[6vw] pt-3xl pb-2xl md:px-[8vw]">
-        {/* Same track definition and gutter as PortfolioGrid below, and the
-            section padding matches it too, so the copy's left edge lands
-            exactly on the grid's second column. Done as a real grid rather
-            than a measured indent: the two stay aligned by construction if
-            the column count or gutter ever changes.
-
-            items-start keeps the print at its own height instead of being
-            stretched to the height of the copy beside it. */}
-        <div className="grid grid-cols-1 items-start gap-x-2xs gap-y-l md:grid-cols-2 xl:grid-cols-3">
-          {/* The print has a whole column to itself and sits at the top left
-              of it. It develops in on scroll rather than simply being there —
-              see DevelopingTile. */}
-          <DevelopingTile className="w-[34vw] max-w-[150px] md:w-[18vw] md:max-w-[200px]" />
-
-          {/* Starts on column 2 and runs the full remaining width of the grid,
-              so its right edge lands on the same page padding as the last
-              portfolio column. It has to span the remaining two columns at xl,
-              not sit inside one: a single column there is ~400px, which at
-              32px type is about 25 characters a line.
-
-              No max-width: the measure is set by the grid now, which puts it
-              around 50 characters at 1440 and 56 at 1920 — wider than the 44ch
-              the copy had before. */}
-          <div className="text-[clamp(1.5rem,1.3143rem+0.7619vw,2rem)] leading-[1.3] font-normal md:col-start-2 xl:col-span-2">
-            {BIO.map((paragraph, i) => (
-              <p key={i} className={i ? "mt-[0.9em]" : undefined}>
-                {paragraph}
-              </p>
-            ))}
-          </div>
+        {/* The portfolio's centred column, three quarters of the width:
+            the same share and the same section padding as PortfolioGrid
+            below, so the copy's edges land on the cards' by construction.
+            Full width on a phone, where a quarter less of a narrow column
+            would leave the copy a few words a line. */}
+        <div className="text-[clamp(1.5rem,1.3143rem+0.7619vw,2rem)] leading-[1.3] font-normal md:mx-auto md:w-3/4">
+          {BIO.map((paragraph, i) => (
+            <p key={i} className={i ? "mt-[0.9em]" : undefined}>
+              {paragraph}
+            </p>
+          ))}
         </div>
       </section>
 

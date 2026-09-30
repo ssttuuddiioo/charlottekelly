@@ -42,9 +42,3 @@ export type VersionId = (typeof VERSIONS)[number]["id"];
 
 export const isVersion = (id: string): id is VersionId =>
   VERSIONS.some((version) => version.id === id);
-
-/**
- * The case study every thumbnail opens on. Fulton, because it is the project
- * the v2 mock was drawn with and the only one carrying all of its slots.
- */
-export const PREVIEW_SLUG = "fulton";

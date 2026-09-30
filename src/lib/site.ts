@@ -14,7 +14,6 @@ export const NAV = [
   { label: "Home", hash: "#top" },
   { label: "Work", hash: "#work" },
   { label: "About", hash: "#about" },
-  { label: "Contact", hash: "#contact" },
 ] as const;
 
 export const SOCIAL = [

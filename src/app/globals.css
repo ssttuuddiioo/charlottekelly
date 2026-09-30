@@ -6,12 +6,12 @@
     /* Height of the fixed bar. Read from JS as well as CSS — scrollToHash
        subtracts it so a section does not land underneath it — so it is set in
        px rather than rem, which keeps that read a plain parseFloat. */
-    --header-h: 56px;
+    --header-h: 126px;
   }
 
   @media (min-width: 48rem) {
     :root {
-      --header-h: 64px;
+      --header-h: 144px;
     }
   }
 

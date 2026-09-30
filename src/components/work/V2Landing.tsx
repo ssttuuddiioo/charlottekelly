@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { ContactForm } from "@/components/work/ContactForm";
 import { COPY, GRID } from "@/components/work/V2Project";
+import { V5Footer } from "@/components/work/V5Footer";
 import { formatDate, POSTS, type Post } from "@/lib/posts";
 import { AGENCIES, BIO, EMAIL, NOTABLE, SERVICES, SOCIAL } from "@/lib/site";
 
@@ -23,6 +25,14 @@ const TEXT = "text-[clamp(1rem,0.9rem+0.3vw,1.25rem)] leading-[1.35]";
 
 const LINK = "no-underline decoration-current hover:underline";
 
+/**
+ * v5's takeover sets each section in a colour of its own: the label in it,
+ * the whole section on a 15% tint of it. In page order, from the palette's
+ * two triads (red, blue, orange; ocher, Lyons blue — the buff is too pale
+ * to carry a label).
+ */
+const PALETTE = ["#d0402c", "#213bc9", "#eb9a5a", "#e2b540", "#1c4286"];
+
 /** How many posts show before See more. */
 const RECENT = 3;
 
@@ -43,29 +53,50 @@ function PostRow({ post, base }: { post: Post; base: string }) {
 }
 
 /** `top` is the space above a section — the gap between sections, less
-    for one that opens the page. */
+    for one that opens the page. With a `color`, the label is set in it and
+    the section sits on a 15% tint of it, full bleed: the tint runs edge to
+    edge and meets the next section's with no gap, the gutter moving inside
+    it and the line length held by the inner grid. */
 function Section({
   id,
   label,
   top = "pt-2xl",
+  color,
   children,
 }: {
   id: string;
   label: string;
   top?: string;
+  color?: string;
   children: ReactNode;
 }) {
-  return (
-    // Baseline-aligned, so the label sits on the first line of its content.
-    <section
-      id={id}
-      aria-labelledby={`${id}-label`}
-      className={`${GRID} ${TEXT} ${top} gap-y-2xs @md:items-baseline`}
-    >
-      <h2 id={`${id}-label`} className="font-semibold @md:col-span-2">
+  const inner = (
+    <>
+      <h2 id={`${id}-label`} className="font-semibold @md:col-span-2" style={color ? { color } : undefined}>
         {label}
       </h2>
       <div className="@md:col-span-6">{children}</div>
+    </>
+  );
+  // Baseline-aligned, so the label sits on the first line of its content.
+  const grid = `${GRID} ${TEXT} gap-y-2xs @md:items-baseline`;
+
+  if (!color) {
+    return (
+      <section id={id} aria-labelledby={`${id}-label`} className={`${grid} ${top}`}>
+        {inner}
+      </section>
+    );
+  }
+
+  return (
+    <section
+      id={id}
+      aria-labelledby={`${id}-label`}
+      className="px-[6vw] py-xl lg:px-[4%]"
+      style={{ backgroundColor: `color-mix(in srgb, ${color} 15%, transparent)` }}
+    >
+      <div className={`${grid} max-w-[78rem]`}>{inner}</div>
     </section>
   );
 }
@@ -86,17 +117,55 @@ function Columns({ children }: { children: ReactNode }) {
   );
 }
 
-/** `bio` off leaves the bio out, for v5's takeover, where the column it
-    opens from already carries it. */
-export function V2Landing({ base, bio = true }: { base: string; bio?: boolean }) {
+/** `bio` off leaves the bio out. `colored` gives each section a colour
+    from PALETTE, for v5's takeover, where the bio sits above them on the
+    cream. `posts` fills Recently — v5 passes
+    one entry per project on its landing. */
+export function V2Landing({
+  base,
+  bio = true,
+  colored = false,
+  posts = POSTS,
+}: {
+  base: string;
+  bio?: boolean;
+  colored?: boolean;
+  posts?: Post[];
+}) {
+  const color = (i: number) => (colored ? PALETTE[i] : undefined);
   return (
-    <div className="px-[6vw] pt-l pb-3xl lg:px-[4%]">
+    <div className={colored ? undefined : "px-[6vw] pt-l pb-3xl lg:px-[4%]"}>
       <div className="@container">
         <h1 className="sr-only">Charlotte Kelly</h1>
 
         {/* Seven columns rather than eight: at this size the full width runs
-            past a comfortable line. */}
-        {bio ? (
+            past a comfortable line.
+
+            In the takeover it is a section like the rest instead: "About" in
+            the label column and the copy in the content column, on the edge
+            the titles below start from. The page has no padding of its own
+            there (the tinted sections run full bleed), so it takes theirs,
+            on the cream, untinted. */}
+        {bio && colored ? (
+          <section
+            id="about"
+            aria-labelledby="about-label"
+            className="px-[6vw] pt-s pb-xl lg:px-[4%]"
+          >
+            <div className={`${GRID} max-w-[78rem] gap-y-2xs @md:items-baseline`}>
+              <h2 id="about-label" className={`${TEXT} font-semibold @md:col-span-2`}>
+                About
+              </h2>
+              <div className={`${COPY} @md:col-span-6`}>
+                {BIO.map((paragraph, i) => (
+                  <p key={i} className={i ? "mt-[0.9em]" : undefined}>
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : bio ? (
           <div id="about" className={GRID}>
             <div className={`${COPY} @md:col-span-7`}>
               {BIO.map((paragraph, i) => (
@@ -117,20 +186,20 @@ export function V2Landing({ base, bio = true }: { base: string; bio?: boolean })
             announced as a disclosure with no JavaScript. The control stays
             under the third entry when open — a hinge, not a footer. It sits
             in the title column, on the edge the titles start from. */}
-        <Section id="recently" label="Recently" top={bio ? undefined : "pt-s"}>
+        <Section id="recently" label="Recently" top={bio ? undefined : "pt-s"} color={color(0)}>
           <ol className="flex flex-col gap-y-s">
-            {POSTS.slice(0, RECENT).map((post) => (
+            {posts.slice(0, RECENT).map((post) => (
               <PostRow key={post.slug} post={post} base={base} />
             ))}
           </ol>
-          {POSTS.length > RECENT ? (
+          {posts.length > RECENT ? (
             <details className="group pt-2xs">
               <summary className="min-h-tap inline-flex cursor-pointer list-none items-center underline decoration-current underline-offset-[0.25em] [&::-webkit-details-marker]:hidden">
                 <span className="group-open:hidden">See more</span>
                 <span className="hidden group-open:inline">See less</span>
               </summary>
               <ol className="flex flex-col gap-y-s pt-2xs">
-                {POSTS.slice(RECENT).map((post) => (
+                {posts.slice(RECENT).map((post) => (
                   <PostRow key={post.slug} post={post} base={base} />
                 ))}
               </ol>
@@ -138,7 +207,7 @@ export function V2Landing({ base, bio = true }: { base: string; bio?: boolean })
           ) : null}
         </Section>
 
-        <Section id="agencies" label="Agencies + studios">
+        <Section id="agencies" label="Agencies + studios" color={color(1)}>
           <Columns>
             {AGENCIES.map((agency) => (
               <li key={agency.name}>
@@ -150,7 +219,7 @@ export function V2Landing({ base, bio = true }: { base: string; bio?: boolean })
           </Columns>
         </Section>
 
-        <Section id="notable" label="Notable projects">
+        <Section id="notable" label="Notable projects" color={color(2)}>
           <Columns>
             {NOTABLE.map((name) => (
               <li key={name}>{name}</li>
@@ -159,7 +228,7 @@ export function V2Landing({ base, bio = true }: { base: string; bio?: boolean })
           </Columns>
         </Section>
 
-        <Section id="services" label="Services">
+        <Section id="services" label="Services" color={color(3)}>
           <Columns>
             {SERVICES.map((name) => (
               <li key={name}>{name}</li>
@@ -167,23 +236,31 @@ export function V2Landing({ base, bio = true }: { base: string; bio?: boolean })
           </Columns>
         </Section>
 
-        <Section id="contact" label="Let’s talk">
-          <Columns>
-            <li>
-              <a href={`mailto:${EMAIL}`} className={LINK}>
-                Email
-              </a>
-            </li>
-            {SOCIAL.map((item) => (
-              <li key={item.label}>
-                <a href={item.href} className={LINK}>
-                  {item.label}
+        {/* In the takeover it is Contact, and only the form: the email and
+            socials move to the footer, as icons. Elsewhere the links, as
+            before. */}
+        <Section id="contact" label={colored ? "Contact" : "Let’s talk"} color={color(4)}>
+          {colored ? (
+            <ContactForm color={PALETTE[4]} />
+          ) : (
+            <Columns>
+              <li>
+                <a href={`mailto:${EMAIL}`} className={LINK}>
+                  Email
                 </a>
               </li>
-            ))}
-          </Columns>
+              {SOCIAL.map((item) => (
+                <li key={item.label}>
+                  <a href={item.href} className={LINK}>
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </Columns>
+          )}
         </Section>
       </div>
+      {colored ? <V5Footer /> : null}
     </div>
   );
 }

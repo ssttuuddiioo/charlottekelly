@@ -1,3 +1,5 @@
+import { PROJECTS } from "@/lib/projects";
+
 /**
  * Recent work, for the "Recently..." list.
  *
@@ -122,6 +124,65 @@ export const POSTS: Post[] = [
     clientUrl: "https://www.zangoodman.com/projects/larret",
   },
 ];
+
+/**
+ * v5's "Recently": the projects on the landing, in the grid's order, one line
+ * each in the same shape as the entries above — what she did, for whom, and
+ * what they make.
+ *
+ * Unlike POSTS these titles are NOT her words. They are drafted from each
+ * project's services and summary, for her to rewrite. The credit comes from
+ * the project itself so the two cannot disagree. Dates are invented, as
+ * above, counting back a few weeks at a time in grid order.
+ */
+const PROJECT_TITLES: Record<string, string> = {
+  "snackville-at-pacific-park":
+    "Naming, messaging, and brand guidelines for Snackville, the reimagined food court at the Santa Monica Pier’s Pacific Park",
+  nutrire:
+    "Creative concepts, product naming, packaging, and verbal identity for Nutrire, a haircare line built on the idea that healthier hair begins with a nourished scalp",
+  rux: "Naming, verbal identity, and site copy for RUX, the construction ERP software company formerly known as Open Door Technology",
+  fulton: "Verbal identity, brand story, and packaging for Fulton, a maker of sustainable modern cork insoles",
+  "eez-co":
+    "Verbal identity and brand story for EEZ Co., organic lollipops and drops for less-sucky sick days",
+  doublesoul:
+    "Verbal identity, packaging, and site copy for doublesoul, ultra-cushioned socks made sustainably",
+  "respin-health":
+    "Brand positioning, a manifesto, and site copy for Respin Health, Halle Berry’s community platform for women entering menopause",
+  dame: "Verbal identity, naming, and newsletters for Dame, a trailblazer in sexual wellness",
+  "little-spoon":
+    "Naming, packaging, and site copy for Little Spoon’s lunches and snacks for kids ages 4 to 7",
+  "de-lune":
+    "Verbal identity and product naming for De Lune, research-backed natural relief for period symptoms",
+  "fair-harbor":
+    "Verbal identity, brand story, and a catalog for Fair Harbor, beachwear made from upcycled plastic bottles",
+  "wilderness-trail":
+    "Site copy, brand story, and blog posts for Wilderness Trail, small-batch bourbons and ryes from “the science guys of bourbon”",
+  "burts-bees":
+    "Verbal identity, site copy, and emails for Burt’s Bees, the brand behind the yellow lip balm tin",
+  fur: "Packaging and site copy for Fur, the first beauty brand dedicated to clean body hair care",
+  targetbook:
+    "Articles, headlines, and research for Target: 20 Years of Design for All, a book on the retailer’s design for everyone",
+  "pernod-ricard":
+    "Site copy, gift guides, newsletters, and even crosswords for Pernod Ricard, home of Absolut, Jameson, and Malibu",
+  "tabitha-brown-target":
+    "Magazine copy for Tabitha Brown for Target, four limited-run lines of home decor, food, and more",
+};
+
+/** Newest first, three weeks apart, from the first POSTS date. */
+function inventedDate(i: number) {
+  const d = new Date(Date.UTC(2026, 7, 4 - i * 21));
+  return d.toISOString().slice(0, 10);
+}
+
+export const PROJECT_POSTS: Post[] = PROJECTS.map((project, i) => ({
+  slug: project.slug,
+  title: PROJECT_TITLES[project.slug] ?? project.title,
+  credit: project.agency.name,
+  date: inventedDate(i),
+}));
+
+/** Every entry either list can link to, for the post page. */
+export const ALL_POSTS: Post[] = [...POSTS, ...PROJECT_POSTS];
 
 const MONTHS = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",

@@ -155,7 +155,7 @@ export function V5Takeover({
               Close
             </button>
           </div>
-          <div className="max-w-[84rem]">{children}</div>
+          <div>{children}</div>
         </div>
       </dialog>
     </div>

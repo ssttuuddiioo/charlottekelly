@@ -40,7 +40,6 @@ export function ScatteredName({
 
       const outers = gsap.utils.toArray<HTMLElement>("[data-letter]", root);
       const inners = gsap.utils.toArray<HTMLElement>("[data-wave]", root);
-      const tagline = root.querySelector<HTMLElement>("[data-tagline]");
       if (!outers.length) return;
 
       // Derived rather than measured: a letter's rest offset from its word-box
@@ -85,8 +84,6 @@ export function ScatteredName({
       // this one.
       mm.add("(prefers-reduced-motion: reduce)", () => {
         gsap.set(outers, { opacity: 1 });
-        // No scroll-linked reveal to run, so the tagline is simply present.
-        if (tagline) gsap.set(tagline, { opacity: 1, y: 0 });
       });
 
       // matchMedia runs the callback when ANY listed condition matches, so
@@ -208,18 +205,6 @@ export function ScatteredName({
             .to(wave, { amp: 0, duration: 0.55, ease: "none" }, 0)
             .set(inners, { y: 0 });
 
-          // The tagline rides the same scrub rather than its own trigger, so
-          // it can never drift out of step with the align. It runs over the
-          // first 0.6 of a ~1.26s timeline: moving the moment you scroll, and
-          // fully there by the time the name has resolved.
-          if (tagline) {
-            alignTl.fromTo(
-              tagline,
-              { opacity: 0, y: () => metrics().u * 0.5 },
-              { opacity: 1, y: 0, duration: 0.6, ease: "power1.out" },
-              0,
-            );
-          }
           // No refresh here any more. It used to be needed because the pin had
           // just changed the page's height; the pin now predates the settle, so
           // the measurements it would recompute have not moved, and refreshing
@@ -246,17 +231,13 @@ export function ScatteredName({
   );
 
   return (
-    // .scattered-name sits on this wrapper rather than on the row of words so
-    // that --letter is in scope for the tagline too: the tagline's offset is
-    // expressed as a multiple of the letter size, which is what keeps it the
-    // same distance under the name at every width.
     <div ref={scope} className="scattered-name flex flex-col items-center">
       {/* Without JS nothing restores opacity, so put it back. The name is also
           in the sr-only h1 either way. */}
       <noscript>
         <style
           dangerouslySetInnerHTML={{
-            __html: "[data-letter],[data-tagline]{opacity:1!important}",
+            __html: "[data-letter]{opacity:1!important}",
           }}
         />
       </noscript>
@@ -268,6 +249,9 @@ export function ScatteredName({
         // lockup on one line on a phone.
         className="text-[length:var(--letter)] flex items-center justify-center gap-[var(--word-gap)] leading-none font-medium"
         aria-hidden="true"
+        // What LandingHeader holds in the middle of the blue as it leaves,
+        // and fades as the blue goes.
+        data-name-row
       >
         {WORDS.map((word) => (
           <div
@@ -297,29 +281,6 @@ export function ScatteredName({
           </div>
         ))}
       </div>
-
-      {/* Real content, so it is NOT inside the aria-hidden lockup above and
-          not duplicated in the sr-only h1.
-
-          Offset in multiples of --letter rather than its own em, so it holds
-          the same distance under the name at every width. 2.6x --letter on
-          desktop clears the lowest scattered letter (dy 1.99em at amp 1) by a
-          margin, which matters because the fade starts while the letters are
-          still on their way up. */}
-      <p
-        data-tagline
-        className="text-fine mt-[calc(var(--letter)*-0.4)] text-center leading-[1.6] font-normal tracking-[0.12em] uppercase md:tracking-[0.16em]"
-        // Hidden in CSS for the same reason the letters are: the align
-        // timeline is only built after the settle completes (~1.5s), and
-        // anything visible until then flashes.
-        style={{ opacity: 0 }}
-      >
-        {/* Each phrase is unbreakable, so on a phone the line wraps between
-            phrases instead of mid-phrase. */}
-        <span className="whitespace-nowrap">Copywriting,</span>{" "}
-        <span className="whitespace-nowrap">Brand Strategy,</span>{" "}
-        <span className="whitespace-nowrap">Verbal Identity</span>
-      </p>
     </div>
   );
 }
